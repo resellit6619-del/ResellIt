@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.resellit.ui.post_screen
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -15,9 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -44,6 +47,17 @@ fun PostScreen(viewModel: PostViewModel = viewModel() ,
                 viewModel.onSelectedImages(uris)
             }
         }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState.postSuccess) {
+        if(uiState.postSuccess){
+            Toast.makeText(context ,"uploaded" , Toast.LENGTH_SHORT).show()
+            viewModel.reset()
+        }
+    }
+
+
     PostContent(
         title = uiState.title ,
         description = uiState.description,
@@ -57,6 +71,7 @@ fun PostScreen(viewModel: PostViewModel = viewModel() ,
         onSelectImages = {
             imagePickerLauncher.launch("image/*")
         },
+        isLoading  = uiState.isLoading ,
         onPostClick = viewModel::onPostClick,
         canPost = uiState.canPost ,
         onBackClick = onBackClick
@@ -76,8 +91,9 @@ fun PostContent(
     canPost: Boolean,
     location: String,
     onLocationChange: (String) -> Unit,
-    onBackClick:()-> Unit,
-    isImagePicked: Boolean
+    onBackClick: () -> Unit,
+    isImagePicked: Boolean,
+    isLoading: Boolean
 ) {
 
     Column(
@@ -136,7 +152,8 @@ fun PostContent(
             Spacer(Modifier.height(Dimens.Large))
             PostListingButton(
                 onClick = onPostClick ,
-                canPost  = canPost
+                canPost  = canPost &&  !isLoading ,
+                isLoading = isLoading
             )
         }
     }
@@ -158,7 +175,8 @@ fun PostPreview(){
         canPost = true,
         location = "",
         onLocationChange = {},
-        isImagePicked = false ,
-        onBackClick = {}
+        onBackClick = {},
+        isImagePicked = false,
+        isLoading = true,
     )
 }

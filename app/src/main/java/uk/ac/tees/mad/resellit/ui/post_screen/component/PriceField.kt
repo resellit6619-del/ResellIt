@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import uk.ac.tees.mad.resellit.ui.theme.AppShapes
 
@@ -15,6 +17,7 @@ import uk.ac.tees.mad.resellit.ui.theme.AppShapes
 fun PriceField(
     value: String,
     onValueChange: (String) -> Unit ,
+    keyboardType: KeyboardType = KeyboardType.Number ,
     modifier: Modifier
 ) {
 
@@ -31,6 +34,7 @@ fun PriceField(
             shape = AppShapes.InputFieldShape,
             maxLines = 1,
             singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             placeholder = {
                 Text("$ 0.00")
             }

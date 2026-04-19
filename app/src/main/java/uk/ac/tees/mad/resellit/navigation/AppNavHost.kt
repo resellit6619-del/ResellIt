@@ -86,7 +86,15 @@ fun AppNavHost(startDestination: NavRoutes,
                 MyListScreen()
             }
             composable(NavRoutes.Setting.route){
-                SettingScreen()
+                SettingScreen(
+                    onNavToLogin = {
+                        navController.navigate(NavRoutes.Login.route){
+                            popUpTo(NavRoutes.Setting.route){
+                                inclusive = true
+                            }
+                        }
+                    },
+                )
             }
             composable(NavRoutes.AddEditView.route){
                 PostScreen(

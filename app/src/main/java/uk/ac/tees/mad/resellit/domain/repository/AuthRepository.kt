@@ -4,6 +4,8 @@ interface AuthRepository {
     suspend fun loginUser(email : String , password : String) :Result<Unit>
    suspend fun registerUser(email : String , password : String) :Result<Unit>
    suspend fun logout() : Result<Unit>
+
+    suspend fun fetchEmail() : String
 }
 
 

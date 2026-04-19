@@ -78,6 +78,10 @@ class AuthRepositoryImpl(private val client: SupabaseClient ,
         Result.failure(mapAuthError(e))
         }
     }
+
+    override suspend fun fetchEmail(): String {
+        return client.auth.currentUserOrNull()?.email ?: "No user profile"
+    }
 }
 
 

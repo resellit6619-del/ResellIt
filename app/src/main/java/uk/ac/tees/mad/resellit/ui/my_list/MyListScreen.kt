@@ -26,14 +26,16 @@ fun MyListScreen(
 ){
     val uiState by viewModel.muListUiState.collectAsStateWithLifecycle()
     MyListScreenContent(
-        uiState = uiState
+        uiState = uiState ,
+        onItemClick = viewModel::onDeleteClick
     )
 }
 
 
 
 @Composable
-fun MyListScreenContent(uiState: MyListUiState) {
+fun MyListScreenContent(uiState: MyListUiState,
+                        onItemClick: (String) -> Unit) {
     Column(modifier = Modifier
         .fillMaxSize()) {
         MyListTopBar()
@@ -53,8 +55,10 @@ fun MyListScreenContent(uiState: MyListUiState) {
                     price = item.price,
                     location = item.location,
                     imageUrl = item.imageUrls.first(),
-                    onClick = {} ,
-                    icon = Icons.Default.DeleteForever
+                    listingId = item.listingId,
+                    onClick = onItemClick ,
+                    icon = Icons.Default.DeleteForever ,
+                    isLoading =uiState.isLoading
                 )
             }
         }
@@ -66,7 +70,8 @@ fun MyListScreenContent(uiState: MyListUiState) {
 @Preview(showBackground = true)
 fun MyListScreenPreview(){
     MyListScreenContent(
-        uiState = MyListUiState()
+        uiState = MyListUiState(),
+        onItemClick = {}
     )
 }
 

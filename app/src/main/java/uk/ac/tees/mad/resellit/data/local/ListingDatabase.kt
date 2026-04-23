@@ -5,12 +5,14 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(
-    entities = [ListingEntity::class],
+    entities = [MyListingEntity::class ,
+                ListingEntity::class],
     version = 1 ,
 )
 @TypeConverters(ListConverter::class)
 abstract class ListingDatabase : RoomDatabase(){
-    abstract fun getListingDao() : ListingDao
+    abstract fun myListingDao() : MyListingDao
+    abstract fun listingDao() : ListingDao
 }
 
 

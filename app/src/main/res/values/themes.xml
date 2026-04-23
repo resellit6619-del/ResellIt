@@ -2,4 +2,12 @@
 <resources>
 
     <style name="Theme.ResellIt" parent="android:Theme.Material.Light.NoActionBar" />
+
+
+    <style name="Theme.MySplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/resellit_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.ResellIt</item>
+    </style>
+
 </resources>

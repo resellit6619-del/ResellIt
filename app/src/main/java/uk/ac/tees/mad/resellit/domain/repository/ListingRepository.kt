@@ -14,19 +14,23 @@ interface ListingRepository {
         imageUrls : List<Uri>
     ): Result<Unit>
 
-    suspend fun getAllListings()
-
     suspend fun getUserListings() : Result<Flow<List<DomainListing>>>
 
     suspend fun deleteListing(listingId : String ): Result<Unit>
 
     suspend fun deleteAllListing() : Result<Unit>
 
-}
+    suspend fun observeListings(): Flow<List<DomainListing>>
 
-/**
- * createListing() -- responsible for creating listing
- * getAllListings() -- responsible for getting all listings
- * getUserListings() -- responsible for getting user listings
- * deleteListing() -- responsible for deleting listing
- */
+    suspend fun refreshFeed(): Result<Unit>
+
+    suspend fun loadOlder()
+
+    suspend fun observeRealtime()
+
+    suspend fun loadOnLogin(): Result<Unit>
+
+    suspend fun deleteOnLogout(): Result<Unit>
+
+    suspend fun fetchByListingId(listingId : String) : Result<DomainListing>
+}

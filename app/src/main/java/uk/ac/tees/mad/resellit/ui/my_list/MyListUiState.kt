@@ -5,5 +5,6 @@ import uk.ac.tees.mad.resellit.domain.model.DomainListing
 data class MyListUiState(
     val isLoading : Boolean = false ,
     val error : String? = null ,
+    val selectedListingId : String = "" ,
     val listings : List<DomainListing> = emptyList()
 )

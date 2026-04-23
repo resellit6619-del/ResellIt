@@ -22,12 +22,14 @@ import uk.ac.tees.mad.resellit.ui.theme.Dimens
 
 @Composable
 fun MyListScreen(
-    viewModel: MyListViewModel = viewModel()
+    viewModel: MyListViewModel = viewModel() ,
+    onDetailViewClick : (String) -> Unit
 ){
     val uiState by viewModel.muListUiState.collectAsStateWithLifecycle()
     MyListScreenContent(
         uiState = uiState ,
-        onItemClick = viewModel::onDeleteClick
+        onItemClick = viewModel::onDeleteClick ,
+        onDetailViewClick = onDetailViewClick
     )
 }
 
@@ -35,7 +37,8 @@ fun MyListScreen(
 
 @Composable
 fun MyListScreenContent(uiState: MyListUiState,
-                        onItemClick: (String) -> Unit) {
+                        onItemClick: (String) -> Unit ,
+                        onDetailViewClick:(String)-> Unit) {
     Column(modifier = Modifier
         .fillMaxSize()) {
         MyListTopBar()
@@ -51,14 +54,16 @@ fun MyListScreenContent(uiState: MyListUiState,
         ) {
             items(uiState.listings){item->
                 ListingItemCard(
+                    icon = Icons.Default.DeleteForever,
                     title = item.title,
                     price = item.price,
                     location = item.location,
                     imageUrl = item.imageUrls.first(),
+                    onClick = onItemClick,
                     listingId = item.listingId,
-                    onClick = onItemClick ,
-                    icon = Icons.Default.DeleteForever ,
-                    isLoading =uiState.isLoading
+                    isLoading =uiState.isLoading,
+                    onDetailViewClick = onDetailViewClick ,
+                    selectedListingId = uiState.selectedListingId
                 )
             }
         }
@@ -71,7 +76,8 @@ fun MyListScreenContent(uiState: MyListUiState,
 fun MyListScreenPreview(){
     MyListScreenContent(
         uiState = MyListUiState(),
-        onItemClick = {}
+        onItemClick = {},
+        onDetailViewClick = {}
     )
 }
 

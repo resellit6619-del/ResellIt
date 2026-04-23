@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.resellit.navigation
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,11 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import uk.ac.tees.mad.resellit.ui.components.AddListingFab
 import uk.ac.tees.mad.resellit.ui.components.BottomNavigationBar
+import uk.ac.tees.mad.resellit.ui.detail.DetailScreen
 import uk.ac.tees.mad.resellit.ui.home.HomeScreen
 import uk.ac.tees.mad.resellit.ui.login.LoginScreen
 import uk.ac.tees.mad.resellit.ui.my_list.MyListScreen
@@ -29,17 +33,19 @@ import uk.ac.tees.mad.resellit.ui.signup.SignupScreen
 import uk.ac.tees.mad.resellit.ui.theme.Dimens
 
 @Composable
-fun AppNavHost(startDestination: NavRoutes,
-               navController: NavHostController) {
+fun AppNavHost(
+    startDestination: NavRoutes,
+    navController: NavHostController
+) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
     val showBottomBar = currentRoute == NavRoutes.Home.route ||
-                        currentRoute == NavRoutes.List.route ||
-                        currentRoute == NavRoutes.Setting.route
+            currentRoute == NavRoutes.List.route ||
+            currentRoute == NavRoutes.Setting.route
 
     val showFab = currentRoute == NavRoutes.Home.route ||
-                currentRoute == NavRoutes.List.route
+            currentRoute == NavRoutes.List.route
 
     Box(
         modifier = Modifier
@@ -80,23 +86,48 @@ fun AppNavHost(startDestination: NavRoutes,
                 )
             }
             composable(NavRoutes.Home.route) {
-                HomeScreen()
+                HomeScreen(
+                    onDetailViewClick = {
+                        navController.navigate(NavRoutes.Detail.createRoute(it))
+                    }
+                )
             }
-            composable(NavRoutes.List.route){
-                MyListScreen()
+            composable(NavRoutes.List.route) {
+                MyListScreen(
+                    onDetailViewClick = {
+                        navController.navigate(NavRoutes.Detail.createRoute(it))
+                    }
+                )
             }
-            composable(NavRoutes.Setting.route){
+            composable(NavRoutes.Setting.route) {
                 SettingScreen(
                     onNavToLogin = {
-                        navController.navigate(NavRoutes.Login.route){
-                            popUpTo(NavRoutes.Setting.route){
+                        navController.navigate(NavRoutes.Login.route) {
+                            popUpTo(NavRoutes.Setting.route) {
                                 inclusive = true
                             }
                         }
                     },
                 )
             }
-            composable(NavRoutes.AddEditView.route){
+
+            composable(
+                route = NavRoutes.Detail.route,
+                arguments = listOf(
+                    navArgument("listingId") {
+                        type = NavType.StringType
+                    }
+                )) { backStackEntry ->
+                val listingId = backStackEntry.arguments?.getString("listingId")
+                DetailScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    listingId = listingId ?: ""
+                )
+            }
+
+            composable(NavRoutes.AddEditView.route) {
                 PostScreen(
                     onBackClick = {
                         navController.popBackStack()
@@ -104,26 +135,26 @@ fun AppNavHost(startDestination: NavRoutes,
                 )
             }
         }
-        if(showBottomBar){
+        if (showBottomBar) {
             BottomNavigationBar(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 currentRoute = currentRoute,
                 onSettingClick = {
                     navController.navigate(NavRoutes.Setting.route) {
-                popUpTo(navController.graph.startDestinationId)
-                launchSingleTop = true
-                restoreState = true
-            }
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 },
                 onListClick = {
-                    navController.navigate(NavRoutes.List.route){
+                    navController.navigate(NavRoutes.List.route) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                         restoreState = true
                     }
                 },
                 onHomeClick = {
-                    navController.navigate(NavRoutes.Home.route){
+                    navController.navigate(NavRoutes.Home.route) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                         restoreState = true

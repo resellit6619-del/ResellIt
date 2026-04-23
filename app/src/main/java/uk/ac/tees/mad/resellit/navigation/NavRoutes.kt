@@ -8,4 +8,8 @@ sealed class NavRoutes (val route : String){
     object List : NavRoutes("list")
 
     object AddEditView : NavRoutes("add")
+
+    object Detail : NavRoutes("detail/{listingId}"){
+        fun createRoute(listingId : String) = "detail/$listingId"
+    }
 }

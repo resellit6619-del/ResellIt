@@ -25,17 +25,26 @@ import uk.ac.tees.mad.resellit.ui.home.component.ListingItemCard
 import uk.ac.tees.mad.resellit.ui.theme.Dimens
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(viewModel: HomeViewModel = viewModel() ,
+               onDetailViewClick:(String)-> Unit) {
     val uiState by viewModel.homeUiState.collectAsStateWithLifecycle()
     HomeScreenContent(
         uiState = uiState ,
-        onLoadMore = viewModel::loadMore
+        onLoadMore = viewModel::loadMore ,
+        onDetailViewClick = onDetailViewClick ,
+        onRefreshClick = viewModel::refreshFeed ,
+        isRefreshing = uiState.isRefreshing
     )
 }
 
 @Composable
-fun HomeScreenContent(uiState: HomeUiState,
-                      onLoadMore: () -> Unit) {
+fun HomeScreenContent(
+    uiState: HomeUiState,
+    onLoadMore: () -> Unit,
+    onDetailViewClick: (String) -> Unit,
+    onRefreshClick: () -> Unit,
+    isRefreshing: Boolean
+) {
 
     val listState = rememberLazyListState()
 
@@ -60,7 +69,9 @@ fun HomeScreenContent(uiState: HomeUiState,
         HomeTopBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(Dimens.topBarHeight)
+                .height(Dimens.topBarHeight) ,
+            onRefreshClick = onRefreshClick ,
+            isRefreshing = isRefreshing
         )
 
         LazyColumn(
@@ -79,7 +90,9 @@ fun HomeScreenContent(uiState: HomeUiState,
                     price = listing.price,
                     location = listing.location,
                     imageUrl = listing.imageUrls.first(),
-                    onClick = {}
+                    onClick = {} ,
+                    listingId = listing.listingId,
+                    onDetailViewClick = onDetailViewClick
                 )
             }
         }
@@ -92,6 +105,9 @@ fun HomeScreenContent(uiState: HomeUiState,
 fun HomeScreenPreview() {
     HomeScreenContent(
         uiState = HomeUiState(),
-        onLoadMore = {}
+        onLoadMore = {},
+        onDetailViewClick = {},
+        onRefreshClick = {},
+        isRefreshing = false
     )
 }

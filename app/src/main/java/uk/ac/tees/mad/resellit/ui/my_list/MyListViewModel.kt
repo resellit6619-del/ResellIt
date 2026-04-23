@@ -50,16 +50,21 @@ class MyListViewModel(application: Application) : AndroidViewModel(application) 
 
     fun onDeleteClick(listingId: String) {
         viewModelScope.launch {
+
             _myListUiState.update {
-                it.copy(isLoading = true)
+                it.copy(
+                    isLoading = true,
+                    selectedListingId = listingId
+                )
             }
+
             listingRepository
                 .deleteListing(listingId)
                 .onSuccess {
                     _myListUiState.update {
                         it.copy(
                             isLoading = false,
-                            error = null
+                            selectedListingId = ""
                         )
                     }
                 }
@@ -67,7 +72,8 @@ class MyListViewModel(application: Application) : AndroidViewModel(application) 
                     _myListUiState.update {
                         it.copy(
                             isLoading = false,
-                            error = error.message ,
+                            error = error.message,
+                            selectedListingId = ""
                         )
                     }
                 }

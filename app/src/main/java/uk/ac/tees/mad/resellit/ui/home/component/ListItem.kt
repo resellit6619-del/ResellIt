@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.resellit.ui.home.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,9 +27,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import uk.ac.tees.mad.resellit.R
+import uk.ac.tees.mad.resellit.ResellItApp
 import uk.ac.tees.mad.resellit.ui.theme.AppShapes
 import uk.ac.tees.mad.resellit.ui.theme.Dimens
 
@@ -36,19 +41,26 @@ import uk.ac.tees.mad.resellit.ui.theme.Dimens
 @Composable
 fun ListingItemCard(
     modifier: Modifier = Modifier,
-    icon : ImageVector = Icons.Default.FavoriteBorder,
+    icon: ImageVector = Icons.Default.FavoriteBorder,
     title: String,
     price: String,
     location: String,
     imageUrl: String,
     onClick: (String) -> Unit,
-    listingId : String = "",
-    isLoading : Boolean = false
+    listingId: String = "",
+    isLoading: Boolean = false,
+    onDetailViewClick: (String) -> Unit = {} ,
+    selectedListingId: String = ""
 ) {
+    val context = LocalContext.current
+    val imageLoader = (context.applicationContext as ResellItApp).imageLoader
 
     Card(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable{
+                onDetailViewClick(listingId)
+            },
         shape = AppShapes.CardShape,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -65,7 +77,11 @@ fun ListingItemCard(
 
             AsyncImage(
                 model = imageUrl,
+                imageLoader = imageLoader,
                 contentDescription = title,
+                placeholder = painterResource(
+                    id = R.drawable.outline_image_24
+                ),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(80.dp)
@@ -96,7 +112,6 @@ fun ListingItemCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = null,
@@ -119,22 +134,22 @@ fun ListingItemCard(
                     onClick(listingId)
                 }
             ) {
-                when{
-                    isLoading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    else->{
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = "Favorite/delete" ,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
+
+                if (isLoading && selectedListingId == listingId) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                } else {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = "delete",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                 }
+
             }
+
         }
     }
 }

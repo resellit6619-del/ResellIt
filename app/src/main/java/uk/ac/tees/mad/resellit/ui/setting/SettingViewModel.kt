@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.resellit.ui.setting
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +20,6 @@ AndroidViewModel(application){
 
     private val listingRepository : ListingRepository =
         (application as ResellItApp).container.listingRepository
-
-    private val _uiState = MutableStateFlow(SettingUiState())
     private val _settingUiState = MutableStateFlow(SettingUiState())
     val settingUiState = _settingUiState.asStateFlow()
 
@@ -52,7 +51,8 @@ AndroidViewModel(application){
     fun onClearDraft(){
 
         _settingUiState.update {
-            it.copy(isLoading = true)
+            it.copy(isLoading = true ,
+                isRefreshing = true)
         }
 
         viewModelScope.launch {
@@ -63,7 +63,8 @@ AndroidViewModel(application){
                         it.copy(
                             isLoading = false ,
                             error = null ,
-                            success = true
+                            success = true ,
+                            isRefreshing = false
                         )
                     }
                 }
@@ -72,7 +73,8 @@ AndroidViewModel(application){
                         it.copy(
                             isLoading = false ,
                             error = error.message ,
-                            success = false
+                            success = false ,
+                            isRefreshing = false
                         )
                     }
                 }
@@ -80,17 +82,38 @@ AndroidViewModel(application){
     }
 
     fun onLogoutClick(){
+
+        _settingUiState.update {
+            it.copy(isLoading = true)
+        }
+
         viewModelScope.launch {
             authRepository
                 .logout()
                 .onSuccess {
-                    _settingUiState.update {
-                        it.copy(
-                            isLoading = false ,
-                            error = null ,
-                            navigateToLogin = true
-                        )
-                    }
+                    Log.d("Setting", "Logout Success")
+                    listingRepository
+                        .deleteOnLogout()
+                        .onSuccess {
+                            Log.d("Setting", "delete success")
+                            _settingUiState.update {
+                                it.copy(
+                                    isLoading = false ,
+                                    error = null ,
+                                    navigateToLogin = true
+                                )
+                            }
+                        }
+                        .onFailure {error->
+                            Log.d("Setting", error.message.toString())
+                            _settingUiState.update {
+                                it.copy(
+                                    isLoading = false ,
+                                    error = error.message ,
+                                    navigateToLogin = false
+                                )
+                            }
+                        }
                 }
                 .onFailure {
                     _settingUiState.update {
@@ -102,7 +125,6 @@ AndroidViewModel(application){
                     }
                 }
         }
-
     }
 
 }

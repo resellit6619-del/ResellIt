@@ -18,10 +18,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         observeListings()
-
-        viewModelScope.launch {
-            listingRepository.refreshFeed()
-        }
+        refreshFeed()
         viewModelScope.launch {
             listingRepository.observeRealtime()
         }
@@ -42,6 +39,18 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun refreshFeed(){
+        viewModelScope.launch {
+            try {
+                _homeUiState.update { it.copy(isRefreshing = true) }
+                listingRepository.refreshFeed()
+            } catch (e: Exception) {
+                _homeUiState.update { it.copy(error = e.message) }
+            } finally {
+                _homeUiState.update { it.copy(isRefreshing = false) }
+            }
+        }
+    }
   private fun observeListings() {
         viewModelScope.launch {
             listingRepository

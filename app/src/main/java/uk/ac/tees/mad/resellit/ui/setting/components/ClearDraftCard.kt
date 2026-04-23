@@ -1,8 +1,14 @@
 package uk.ac.tees.mad.resellit.ui.setting.components
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
@@ -13,14 +19,29 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import uk.ac.tees.mad.resellit.ui.theme.AppShapes
 import uk.ac.tees.mad.resellit.ui.theme.Dimens
 
 @Composable
 fun ClearDraftCard(modifier: Modifier = Modifier ,
-                   onClick:()-> Unit){
+                   onClick:()-> Unit ,
+                   isRefreshing : Boolean){
+
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800, easing = LinearEasing)
+        ),
+        label = ""
+    )
+
     Card(modifier = modifier
         .fillMaxWidth()
         .padding(horizontal = Dimens.ScreenHorizontalPadding) ,
@@ -31,7 +52,10 @@ fun ClearDraftCard(modifier: Modifier = Modifier ,
             defaultElevation = Dimens.CardElevation
         )){
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.ScreenHorizontalPadding) ,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .padding(horizontal = Dimens.ScreenHorizontalPadding) ,
             verticalAlignment = Alignment.CenterVertically ,
             horizontalArrangement = Arrangement.SpaceBetween
         ){

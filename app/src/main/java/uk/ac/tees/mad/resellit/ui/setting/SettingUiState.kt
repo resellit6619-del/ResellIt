@@ -6,5 +6,6 @@ data class SettingUiState(
     val success : Boolean = false ,
     val isDialogOpen : Boolean = false ,
     val navigateToLogin: Boolean = false ,
+    val isRefreshing : Boolean = false ,
     val profile : String = ""
 )

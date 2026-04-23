@@ -24,6 +24,7 @@ import uk.ac.tees.mad.resellit.ui.setting.components.SettingTopBar
 import uk.ac.tees.mad.resellit.ui.setting.components.UserProfileCard
 import uk.ac.tees.mad.resellit.ui.theme.Dimens
 
+
 @Composable
 fun SettingScreen(
     onNavToLogin: () -> Unit,
@@ -46,7 +47,8 @@ fun SettingScreen(
         onConfirm = {
             viewModel.onClearDraft()
             viewModel.onDialogToggle()
-        }
+        } ,
+        isRefreshing = uiState.isRefreshing
     )
 }
 
@@ -58,7 +60,8 @@ fun SettingContent(
     isLoading: Boolean,
     isDialogOpen: Boolean,
     onConfirm: () -> Unit,
-    profile: String
+    profile: String ,
+    isRefreshing : Boolean
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -74,7 +77,8 @@ fun SettingContent(
             SettingTopBar()
             Spacer(modifier = Modifier.height(Dimens.Small))
             UserProfileCard(profile = profile)
-            ClearDraftCard(onClick = onToggle)
+            ClearDraftCard(onClick = onToggle ,
+                isRefreshing = isRefreshing)
             Spacer(modifier = Modifier.weight(1f))
             LogoutButton(onLogoutClick = onLogoutClick)
             Spacer(modifier = Modifier.height(Dimens.Small))
@@ -132,6 +136,7 @@ fun SettingPreview() {
         isLoading = false,
         isDialogOpen = false,
         onConfirm = {},
-        profile = "james.iredell@examplepetstore.com"
+        profile = "james.iredell@examplepetstore.com" ,
+        isRefreshing = false
     )
 }

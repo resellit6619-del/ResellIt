@@ -10,8 +10,11 @@ data class ListingDto(
     val price: String,
     val location: String,
     val image_urls: List<String>,
-    val user_id: String
+    val user_id: String ,
+    val created_at : String
 )
+
+
 
 
 /**

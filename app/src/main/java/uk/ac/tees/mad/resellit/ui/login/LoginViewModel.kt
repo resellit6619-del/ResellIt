@@ -9,11 +9,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.ac.tees.mad.resellit.ResellItApp
 import uk.ac.tees.mad.resellit.domain.repository.AuthRepository
+import uk.ac.tees.mad.resellit.domain.repository.ListingRepository
 
 class LoginViewModel (application: Application)
     : AndroidViewModel(application) {
         private val auth: AuthRepository =
             (application as ResellItApp).container.authRepository
+
+    private val listingRepository : ListingRepository =
+        (application as ResellItApp).container.listingRepository
         private val _loginUiState = MutableStateFlow(LoginUiState())
     val loginUiState = _loginUiState.asStateFlow()
 
@@ -61,13 +65,26 @@ class LoginViewModel (application: Application)
                 password = state.password
                 )
                 .onSuccess {
-                    _loginUiState.update {
-                        it.copy(
-                            navigateToHome = true ,
-                            isLoading = false ,
-                            error = null
-                        )
-                    }
+                    listingRepository
+                        .loadOnLogin()
+                        .onSuccess {
+                            _loginUiState.update {
+                                it.copy(
+                                    navigateToHome = true ,
+                                    isLoading = false ,
+                                    error = null
+                                )
+                            }
+                        }
+                        .onFailure {error->
+                            _loginUiState.update {
+                                it.copy(
+                                    navigateToHome = false ,
+                                    isLoading = false ,
+                                    error = error.message
+                                )
+                            }
+                        }
                 }
                 .onFailure { error->
                     _loginUiState.update {
